@@ -146,6 +146,31 @@ ggplot(pos_hos %>%
 
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
+COVID Deaths total between states and territories.
+
+``` r
+ggplot(data %>% 
+         filter(!is.na(state)) %>% 
+         filter(deathConfirmed != 0), aes(state, deathConfirmed)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.9, fill = "gold", alpha = 0.8) +
+  xlab("States and Territories") +
+  ylab("Number of Deaths") +
+  ggtitle("Deaths due to COVID-19 in the United States") +
+  labs(caption = "Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases between states and U.S. territories.\nMissing states/territories imply no data.\nData Accessed & Plot created: 12/8/20") +
+  theme_classic() +
+  geom_text(aes(label = deathConfirmed), vjust = -1) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, size = 12),
+        axis.text.y = element_text(size = 12),
+        plot.title = element_text(hjust = 0.5, size = 20),
+         plot.caption = element_text(hjust = 0, size = 8)) +
+  theme(legend.position = "top")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+Scatter plot of daily positive case increase versus daily death
+increase.
+
 ``` r
 ggplot(data %>% 
          filter(state != "AS"), aes(positiveIncrease, deathIncrease)) +
@@ -161,7 +186,9 @@ ggplot(data %>%
   theme(legend.position = "top")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+Scatterplot above w/o outlier (positive increase \> 24,000).
 
 ``` r
 ggplot(data %>% 
@@ -178,7 +205,7 @@ ggplot(data %>%
   theme(legend.position = "top")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 # Mapping counts
 
