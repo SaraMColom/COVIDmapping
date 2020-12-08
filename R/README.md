@@ -178,8 +178,8 @@ increase.
 ggplot(data %>% 
          filter(state != "AS"), aes(positiveIncrease, deathIncrease)) +
   geom_point(size = 5, color = "gold", alpha = 0.6) +
-  xlab("Rate of Positive Cases Increase") +
-  ylab("Rate of Death Increase (Log-Fold )") +
+  xlab("Daily Increase in Positive Cases") +
+  ylab("Daily Increase in Death Increase") +
   ggtitle("COVID-19 Cases in the United States") +
   labs(caption = "Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases between states and U.S. territories.\nAmerican Samoa was excluded due to no data.\nData Accessed & Plot created: 12/8/20") +
   theme_classic() +
