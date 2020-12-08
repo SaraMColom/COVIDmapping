@@ -1,4 +1,4 @@
-Map
+Exploring COVID Data
 ================
 Sara Colom
 12/8/2020
@@ -130,7 +130,7 @@ pos_hos <- pos_hos %>%
 ``` r
 ggplot(pos_hos %>% 
          filter(state != "AS"), aes(state, log(value), fill = key)) +
-  geom_bar(stat = "identity", position = "dodge") +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.9) +
   scale_fill_manual("Case status", values = c("blue", "gold")) +
   xlab("States and Territories") +
   ylab("Case Numbers (Log-Fold )") +
@@ -147,19 +147,50 @@ ggplot(pos_hos %>%
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
-ggplot(pos_hos %>% 
-         filter(state != "AS"), aes(state, log(value), fill = key)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  scale_fill_manual("Case status", values = c("blue", "gold")) +
-  xlab("States and Territories") +
-  ylab("Case Numbers (Log-Fold )") +
+ggplot(data %>% 
+         filter(state != "AS"), aes(positiveIncrease, deathIncrease)) +
+  geom_point(size = 5, color = "gold", alpha = 0.6) +
+  xlab("Rate of Positive Cases Increase") +
+  ylab("Rate of Death Increase (Log-Fold )") +
   ggtitle("COVID-19 Cases in the United States") +
-  labs(caption = "Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases between states and U.S. territories.\nAmerican Samoa was excluded due to no data.\nNote: Y-axis case count is log-transformed.\nData Accessed & Plot created: 12/8/20") +
+  labs(caption = "Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases between states and U.S. territories.\nAmerican Samoa was excluded due to no data.\nData Accessed & Plot created: 12/8/20") +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, size = 8, face = "bold"),
+  theme(axis.text.x = element_text(vjust = 0.25, size = 8, face = "bold"),
         plot.title = element_text(hjust = 0.5, size = 20),
          plot.caption = element_text(hjust = 0, size = 8)) +
   theme(legend.position = "top")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+ggplot(data %>% 
+         filter(state != "AS" & positiveIncrease < 24735), aes(positiveIncrease, deathIncrease)) +
+  geom_point(size = 5, color = "gold", alpha = 0.6) +
+  xlab("Daily increase in Positive Cases") +
+  ylab("Daily Increase in Death") +
+  ggtitle("COVID-19 Cases in the United States") +
+  labs(caption = "Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases across states and U.S. territories.\nAmerican Samoa was excluded due to no data.\nData Accessed & Plot created: 12/8/20") +
+  theme_classic() +
+  theme(axis.text.x = element_text(vjust = 0.25, size = 8, face = "bold"),
+        plot.title = element_text(hjust = 0.5, size = 20),
+         plot.caption = element_text(hjust = 0, size = 8)) +
+  theme(legend.position = "top")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+
+# Mapping counts
+
+1.  Combine the main data set with the info data set.
+
+<!-- end list -->
+
+``` r
+data <- data %>% 
+  rename(abbreviation = state)
+
+
+data <- data %>% 
+  left_join(info)
+```

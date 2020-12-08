@@ -1,5 +1,5 @@
 ---
-title: "Map"
+title: "Exploring COVID Data"
 author: "Sara Colom"
 date: "12/8/2020"
 output: github_document
@@ -104,10 +104,20 @@ ggplot(data %>%
 ```
 
 
+# Mapping counts
 
+
+1. Combine the main data set with the info data set. 
 
 ```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
 
+
+data <- data %>% 
+  rename(abbreviation = state)
+
+
+data <- data %>% 
+  left_join(info)
 
 ```
 
