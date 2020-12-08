@@ -9,6 +9,10 @@ output: github_document
 
 Prepare a report on current COVID cases and make cool maps showing COVID cases.
 
+
+1. Load libraries
+2. Read in data from the covidtracking API and from project directory.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -17,6 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(httr)
 library(jsonlite)
+library(leaflet)
 
 
 
@@ -52,7 +57,7 @@ pos_hos <- pos_hos %>%
 
 
 
-```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
+```{r, warning = F, message = F, fig.width = 10, fig.height = 8}
 ggplot(pos_hos %>% 
          filter(state != "AS"), aes(state, log(value), fill = key)) +
   geom_bar(stat = "identity", position = "dodge", alpha = 0.9) +
@@ -71,7 +76,7 @@ ggplot(pos_hos %>%
 
 COVID Deaths total between states and territories.
 
-```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
+```{r, warning = F, message = F, fig.width = 10, fig.height = 8}
 ggplot(data %>% 
          filter(!is.na(state)) %>% 
          filter(deathConfirmed != 0), aes(state, deathConfirmed)) +
@@ -91,7 +96,7 @@ ggplot(data %>%
 
 Scatter plot of daily positive case increase versus daily death increase.
 
-```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
+```{r, warning = F, message = F}
 ggplot(data %>% 
          filter(state != "AS"), aes(positiveIncrease, deathIncrease)) +
   geom_point(size = 5, color = "gold", alpha = 0.6) +

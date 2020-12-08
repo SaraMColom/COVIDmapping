@@ -8,6 +8,9 @@ Sara Colom
 Prepare a report on current COVID cases and make cool maps showing COVID
 cases.
 
+1.  Load libraries
+2.  Read in data from the covidtracking API and from project directory.
+
 # Explore data
 
 ``` r
