@@ -22,8 +22,11 @@ library(tidyverse)
 library(httr)
 library(jsonlite)
 library(leaflet)
+library(lubridate)
+library(gganimate)
 
 
+# memory.limit(size=28000)
 
 # Make a GET request to the COVID API
 
@@ -31,6 +34,8 @@ data <- read.csv("https://api.covidtracking.com/v1/states/current.csv")
 
 info <- read.csv("../Data/states_info.csv")
 
+
+current_date <- Sys.Date()
 ```
 
 
@@ -65,7 +70,7 @@ ggplot(pos_hos %>%
   xlab("States and Territories") +
   ylab("Case Numbers (Log-Fold )") +
   ggtitle("COVID-19 Cases in the United States") +
-  labs(caption = "Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases between states and U.S. territories.\nAmerican Samoa was excluded due to no data.\nNote: Y-axis case count is log-transformed.\nData Accessed & Plot created: 12/8/20") +
+  labs(caption = paste("Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases between states and U.S. territories.\nAmerican Samoa was excluded due to no data.\nNote: Y-axis case count is log-transformed.\nData Accessed & Plot created:",current_date)) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, size = 12),
         axis.text.y = element_text(size = 12),
@@ -84,7 +89,7 @@ ggplot(data %>%
   xlab("States and Territories") +
   ylab("Number of Deaths") +
   ggtitle("Deaths due to COVID-19 in the United States") +
-  labs(caption = "Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases between states and U.S. territories.\nMissing states/territories imply no data.\nData Accessed & Plot created: 12/8/20") +
+  labs(caption = paste("Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases between states and U.S. territories.\nMissing states/territories imply no data.\nData Accessed & Plot created:", current_date)) +
   theme_classic() +
   geom_text(aes(label = deathConfirmed), vjust = -1) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, size = 12),
@@ -103,7 +108,7 @@ ggplot(data %>%
   xlab("Daily Increase in Positive Cases") +
   ylab("Daily Increase in Death Increase") +
   ggtitle("COVID-19 Cases in the United States") +
-  labs(caption = "Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases between states and U.S. territories.\nAmerican Samoa was excluded due to no data.\nData Accessed & Plot created: 12/8/20") +
+  labs(caption = paste("Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases between states and U.S. territories.\nAmerican Samoa was excluded due to no data.\nData Accessed & Plot created:", current_date)) +
   theme_classic() +
   theme(axis.text.x = element_text(vjust = 0.25, size = 8, face = "bold"),
         plot.title = element_text(hjust = 0.5, size = 20),
@@ -122,7 +127,7 @@ ggplot(data %>%
   xlab("Daily increase in Positive Cases") +
   ylab("Daily Increase in Death") +
   ggtitle("COVID-19 Cases in the United States") +
-  labs(caption = "Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases across states and U.S. territories.\nAmerican Samoa was excluded due to no data.\nData Accessed & Plot created: 12/8/20") +
+  labs(caption = paste("Data source: https://covidtracking.com/data/api\nNumber of COVID-19 cases across states and U.S. territories.\nAmerican Samoa was excluded due to no data.\nData Accessed & Plot created:", current_date)) +
   theme_classic() +
   theme(axis.text.x = element_text(vjust = 0.25, size = 8, face = "bold"),
         plot.title = element_text(hjust = 0.5, size = 20),
@@ -147,4 +152,128 @@ data <- data %>%
   left_join(info)
 
 ```
+
+
+# Cases in California example
+
+```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
+ca <- read.csv("https://api.covidtracking.com/v1/states/ca/daily.csv")
+
+
+# make date variables; one for month, year and day
+
+iso <- "([0-9]{4})([0-1][0-9])([0-3][0-9])" # Year-Month-Day to match
+
+dates <- rematch2::re_match(text = ca %>% pull(date), pattern = iso) %>% 
+  rename(Year = 1,
+         Month = 2,
+         Day = 3) %>% 
+  unite("Date", c(Year, Month, Day), sep = "-", remove = FALSE)
+
+
+# Incorporate data to the main data frame.  
+
+```
+
+
+
+
+# Global trends
+
+
+Prepare a scatter plot animation for multiple countries cases vs deaths.
+
+```{r, warning = F, message = F}
+
+coun_res <- GET("https://corona.lmao.ninja/v2/historical?lastdays=100") # read in data
+
+coun_data = fromJSON(rawToChar(coun_res$content)) # Convert json to tabular data
+
+countrylist <- c("USA", "South Africa", "Mexico", "UK", "Brazil", "Italy", "India", "China","Australia") # Countries to analyze
+
+# Index of countries
+index <- coun_data %>%
+  pull(country) %in% countrylist %>% 
+  which()
+
+# Dates to capture (1st and 15th day of each month)
+
+captdate <- c(paste(c(1:12), rep("1/20", times = 12), sep = "/"), # first day of month
+           paste(c(1:12), rep("15/20", times = 12), sep = "/")) %>%  # 15th day of month
+  mdy()
+
+
+
+cases <- coun_data$timeline$cases %>% 
+  slice(index) %>% 
+  gather() %>% 
+  rename(Date = key, Cases = value) %>% 
+  mutate(Date = mdy(Date)) %>% 
+  filter(Date %in% captdate)
+  
+
+deaths <- coun_data$timeline$deaths  %>% 
+  slice(index) %>% 
+  gather() %>% 
+  rename(Date = key, Deaths = value) %>% 
+  mutate(Date = mdy(Date)) %>% 
+  filter(Date %in% captdate)
+
+recovered <- coun_data$timeline$recovered  %>% 
+  slice(index) %>% 
+  gather() %>% 
+  rename(Date = key, Recovered = value) %>% 
+  mutate(Date = mdy(Date)) %>% 
+  filter(Date %in% captdate)
+
+total <- cases %>% 
+  left_join(deaths, by = "Date") %>% 
+  left_join(recovered, by = "Date")
+
+
+rm(cases, deaths, recovered)
+
+total <- total %>% 
+  mutate(Country = rep(coun_data %>%
+                         slice(index) %>% 
+                         pull(country), times = nrow(total)/length(index)),
+         Province = rep(coun_data %>%
+                          slice(index) %>% 
+                          pull(province), times = nrow(total)/length(index)))
+
+# Collapse to obtain the total of Cases, Deaths and Recovered by Country
+
+total <- total %>% 
+  group_by(Country, Date) %>% 
+  summarise(Cases = sum(Cases), Deaths = sum(Deaths), Recovered = sum(Recovered))
+```
+
+
+# Make animation
+
+```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
+
+
+p <- ggplot(
+  total, 
+  aes(x = Cases, y = Deaths, color = Country)
+  ) +
+  geom_point(alpha = 0.7, size = 5) +
+  ggtitle("COVID Cases & Deaths in Last 100 Days")  +
+  scale_color_brewer(palette = "Set3") +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  labs(x = "Cases", y = "Deaths") +
+  theme_classic() +
+  theme(axis.text.x = element_text(vjust = 0.25, size = 8, face = "bold"),
+        plot.title = element_text(hjust = 0.5, size = 20),
+         plot.caption = element_text(hjust = 0, size = 8)) +
+  theme(legend.position = "top")
+
+animation <- p + transition_time(Date) +
+  labs(title = "Date: {frame_time}")
+
+animation
+```
+
 
