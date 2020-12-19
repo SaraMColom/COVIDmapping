@@ -183,6 +183,9 @@ dates <- rematch2::re_match(text = ca %>% pull(date), pattern = iso) %>%
 
 Prepare a scatter plot animation for multiple countries cases vs deaths.
 
+
+First read in and wrangle data.
+
 ```{r, warning = F, message = F}
 
 coun_res <- GET("https://corona.lmao.ninja/v2/historical?lastdays=100") # read in data
@@ -249,21 +252,105 @@ total <- total %>%
 ```
 
 
-# Make animation
+Read in world population data and estimate a per capita per selected country.
+
+```{r, warning = F, message = F}
+library(remotes)
+library(WDI)
+
+WDIsearch('population, total')
+
+dat = WDI(indicator='SP.POP.TOTL', start = 2019, end=2019) %>% 
+  filter(country %in% countrylist) %>% 
+  janitor::clean_names() %>% 
+  rename(Country = country) 
+  
+
+# Merge population data
+
+total <- total %>% 
+  left_join(dat)
+
+rm(dat)
+
+# Estimate per capita cases, deaths and recovered
+
+
+capita <- total %>% 
+  group_by(Country, Date) %>% 
+  summarise(capitaDeaths = Deaths/sp_pop_totl,
+            capitaCases = Cases/sp_pop_totl,
+            capitaRecovered = Recovered/sp_pop_totl
+            )
+
+total <- total %>% 
+  left_join(capita)
+
+```
+
+## Data distribution
+
+Summary stats
 
 ```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
 
+sum_total <- total %>% 
+                ungroup(Date) %>% 
+                summarise(across(c(Cases, Deaths, Recovered), mean)) %>% 
+                rename_at(vars(-Country),function(x) paste0(x,"_mean")) %>% 
+                left_join(
+                total %>% 
+                  ungroup(Date) %>% 
+                  summarise(across(c(Cases, Deaths, Recovered), sd)) %>% 
+                  rename_at(vars(-Country),function(x) paste0(x,"_sd"))
+                ) %>% 
+                select("Country", sort(colnames(.)))
+
+sum_total
+```
+Per Capita Deaths
+
+```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
+ggplot(total) +
+  geom_histogram(aes(capitaDeaths, fill = Country),
+                 alpha = 0.8,
+                 bins = 50) +
+  theme_minimal()
+```
+
+
+## Make animation
+
+```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
+
+xlow <- total %>% 
+  pull(capitaCases) %>% 
+  min()
+
+xhigh <- total %>% 
+  pull(capitaCases) %>% 
+  max()
+
+ylow <- total %>% 
+  pull(capitaDeaths) %>% 
+  min()
+
+yhigh <- total %>% 
+  pull(capitaDeaths) %>% 
+  max()
 
 p <- ggplot(
   total, 
-  aes(x = Cases, y = Deaths, color = Country)
+  aes(x = capitaCases, y = log(capitaDeaths), color = Country)
   ) +
   geom_point(alpha = 0.7, size = 5) +
   ggtitle("COVID Cases & Deaths in Last 100 Days")  +
   scale_color_brewer(palette = "Set3") +
   scale_size(range = c(2, 12)) +
-  scale_x_log10() +
-  labs(x = "Cases", y = "Deaths") +
+  xlim(xlow, xhigh) +
+  ylim(ylow, yhigh) +
+  #scale_x_log10() +
+  labs(x = "Per Capita Cases", y = "Per Capita Deaths") +
   theme_classic() +
   theme(axis.text.x = element_text(vjust = 0.25, size = 8, face = "bold"),
         plot.title = element_text(hjust = 0.5, size = 20),
