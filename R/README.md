@@ -330,8 +330,13 @@ WDIsearch('population, total')
 
 ``` r
 dat = WDI(indicator='SP.POP.TOTL', start = 2019, end=2019) %>% 
-  filter(country %in% countrylist) %>% 
+  mutate(country = case_when(
+    country %in% "United States" ~ "USA",
+    country %in% "United Kingdom" ~ "UK",
+    TRUE ~ country
+  )) %>% 
   janitor::clean_names() %>% 
+  filter(country %in% countrylist) %>% 
   rename(Country = country) 
   
 
@@ -393,7 +398,9 @@ Per Capita Deaths
 
 ``` r
 ggplot(total) +
-  geom_histogram(aes(capitaDeaths), bins = 50) +
+  geom_histogram(aes(capitaDeaths, fill = Country),
+                 alpha = 0.8,
+                 bins = 50) +
   theme_minimal()
 ```
 
@@ -420,20 +427,21 @@ yhigh <- total %>%
 
 p <- ggplot(
   total, 
-  aes(x = capitaCases, y = log(capitaDeaths), color = Country)
+  aes(x = capitaCases, y = capitaDeaths, color = Country)
   ) +
-  geom_point(alpha = 0.7, size = 5) +
+  geom_point(alpha = 0.7, size = 7, position = position_jitter(h=0.15,w=0.15)) +
   ggtitle("COVID Cases & Deaths in Last 100 Days")  +
   scale_color_brewer(palette = "Set3") +
   scale_size(range = c(2, 12)) +
   xlim(xlow, xhigh) +
   ylim(ylow, yhigh) +
   #scale_x_log10() +
-  labs(x = "Per Capita Cases", y = "Per Capita Deaths") +
+  labs(x = "Per Capita Cases", y = "Per Capita Deaths (Log-fold)") +
+  geom_text(aes(label = Country), color = "black") +
   theme_classic() +
-  theme(axis.text.x = element_text(vjust = 0.25, size = 8, face = "bold"),
-        plot.title = element_text(hjust = 0.5, size = 20),
-         plot.caption = element_text(hjust = 0, size = 8)) +
+  theme(axis.text= element_text(size = 20, face = "bold"),
+        plot.title = element_text(hjust = 0.5, size = 25),
+        axis.title = element_text(size = 22)) +
   theme(legend.position = "top")
 
 animation <- p + transition_time(Date) +
