@@ -193,7 +193,15 @@ coun_res <- GET("https://corona.lmao.ninja/v2/historical?lastdays=100") # read i
 
 coun_data = fromJSON(rawToChar(coun_res$content)) # Convert json to tabular data
 
-countrylist <- c("USA", "South Africa", "Mexico", "UK", "Brazil", "Italy", "India", "China","Australia") # Countries to analyze
+countrylist <- c("USA", 
+                 "South Africa",
+                 "Mexico", 
+                 "UK", 
+                 "Brazil",
+                 "Italy",
+                 "India",
+                 "China",
+                 "Australia") # Countries to analyze
 
 # Index of countries
 index <- coun_data %>%
@@ -206,50 +214,70 @@ captdate <- c(paste(c(1:12), rep("1/20", times = 12), sep = "/"), # first day of
            paste(c(1:12), rep("15/20", times = 12), sep = "/")) %>%  # 15th day of month
   mdy()
 
+countries <- coun_data %>% 
+  filter(country %in% countrylist) %>%
+  pull(country)
 
+province <- coun_data %>% 
+  filter(country %in% countrylist) %>%
+  pull(province)
 
 cases <- coun_data$timeline$cases %>% 
   slice(index) %>% 
   gather() %>% 
-  rename(Date = key, Cases = value) %>% 
+  rename(Date = key,
+         Cases = value) %>% 
   mutate(Date = mdy(Date)) %>% 
   filter(Date %in% captdate)
+
+cases <- cases %>% 
+  mutate(Country = rep(countries, times = (nrow(cases)/length(index)))) %>% 
+  mutate(Province =  rep(province, times = (nrow(cases)/length(index))))
   
 
 deaths <- coun_data$timeline$deaths  %>% 
   slice(index) %>% 
   gather() %>% 
-  rename(Date = key, Deaths = value) %>% 
+  rename(Date = key,
+         Deaths = value) %>% 
   mutate(Date = mdy(Date)) %>% 
   filter(Date %in% captdate)
+
+deaths <- deaths %>% 
+  mutate(Country = rep(countries, times = (nrow(deaths)/length(index)))) %>% 
+  mutate(Country = rep(countries, times = (nrow(deaths)/length(index)))) %>% 
+  mutate(Province =  rep(province, times = (nrow(deaths)/length(index))))
+  
 
 recovered <- coun_data$timeline$recovered  %>% 
   slice(index) %>% 
   gather() %>% 
-  rename(Date = key, Recovered = value) %>% 
+  rename(Date = key,
+         Recovered = value) %>% 
   mutate(Date = mdy(Date)) %>% 
   filter(Date %in% captdate)
 
+recovered <- recovered %>% 
+  mutate(Country = rep(countries, times = (nrow(recovered)/length(index))))  %>% 
+  mutate(Country = rep(countries, times = (nrow(recovered)/length(index)))) %>% 
+  mutate(Province =  rep(province, times = (nrow(recovered)/length(index))))
+  
 total <- cases %>% 
-  left_join(deaths, by = "Date") %>% 
-  left_join(recovered, by = "Date")
+  left_join(deaths) %>% 
+  left_join(recovered)
 
 
 rm(cases, deaths, recovered)
 
-total <- total %>% 
-  mutate(Country = rep(coun_data %>%
-                         slice(index) %>% 
-                         pull(country), times = nrow(total)/length(index)),
-         Province = rep(coun_data %>%
-                          slice(index) %>% 
-                          pull(province), times = nrow(total)/length(index)))
+
+  
 
 # Collapse to obtain the total of Cases, Deaths and Recovered by Country
 
 total <- total %>% 
   group_by(Country, Date) %>% 
-  summarise(Cases = sum(Cases), Deaths = sum(Deaths), Recovered = sum(Recovered))
+  summarise(Cases = sum(Cases), Deaths = sum(Deaths), Recovered = sum(Recovered)) %>% 
+  ungroup()
 ```
 
 
@@ -301,12 +329,12 @@ Summary stats
 ```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
 
 sum_total <- total %>% 
-                ungroup(Date) %>% 
+                group_by(Country) %>% 
                 summarise(across(c(Cases, Deaths, Recovered), mean)) %>% 
                 rename_at(vars(-Country),function(x) paste0(x,"_mean")) %>% 
                 left_join(
                 total %>% 
-                  ungroup(Date) %>% 
+                  group_by(Country) %>% 
                   summarise(across(c(Cases, Deaths, Recovered), sd)) %>% 
                   rename_at(vars(-Country),function(x) paste0(x,"_sd"))
                 ) %>% 
@@ -329,34 +357,17 @@ ggplot(total) +
 
 ```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
 
-xlow <- total %>% 
-  pull(capitaCases) %>% 
-  min()
-
-xhigh <- total %>% 
-  pull(capitaCases) %>% 
-  max()
-
-ylow <- total %>% 
-  pull(capitaDeaths) %>% 
-  min()
-
-yhigh <- total %>% 
-  pull(capitaDeaths) %>% 
-  max()
 
 p <- ggplot(
   total, 
-  aes(x = capitaCases, y = capitaDeaths, color = Country)
+  aes(x = Cases, y = Deaths, color = Country)
   ) +
   geom_point(alpha = 0.7, size = 7, position = position_jitter(h=0.15,w=0.15)) +
   ggtitle("COVID Cases & Deaths in Last 100 Days")  +
   scale_color_brewer(palette = "Set3") +
   scale_size(range = c(2, 12)) +
-  xlim(xlow, xhigh) +
-  ylim(ylow, yhigh) +
   #scale_x_log10() +
-  labs(x = "Per Capita Cases", y = "Per Capita Deaths (Log-fold)") +
+  labs(x = "Cases (Daily Observed Number)", y = "Deaths(Daily Observed Number)") +
   geom_text(aes(label = Country), color = "black") +
   theme_classic() +
   theme(axis.text= element_text(size = 20, face = "bold"),
