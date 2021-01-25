@@ -28,7 +28,7 @@ library(ggflags)
 
 
 
-# memory.limit(size=28000)
+source("plot_data_functions.R")
 
 # Make a GET request to the COVID API
 
@@ -156,17 +156,24 @@ data <- data %>%
 ```
 
 
-# Cases in California example
+# State level trends
 
-```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
-ca <- read.csv("https://api.covidtracking.com/v1/states/ca/daily.csv")
+```{r, warning = F, message = F}
+
+# Make vector of states to read in.
+
+states <- c("ca", "mi", "ny", "fl", "ga", "tx", "wi", "wa", "va", "in")
+
+state_data <- states %>% 
+  purrr::map_df(~read_state(.))
+
 
 
 # make date variables; one for month, year and day
 
 iso <- "([0-9]{4})([0-1][0-9])([0-3][0-9])" # Year-Month-Day to match
 
-dates <- rematch2::re_match(text = ca %>% pull(date), pattern = iso) %>% 
+dates <- rematch2::re_match(text = state_data %>% pull(date), pattern = iso) %>% 
   rename(Year = 1,
          Month = 2,
          Day = 3) %>% 
@@ -175,10 +182,31 @@ dates <- rematch2::re_match(text = ca %>% pull(date), pattern = iso) %>%
 
 # Incorporate data to the main data frame.  
 
+state_data <- state_data %>% 
+  left_join(
+    dates %>% 
+      rename(date = `.match`) %>% 
+      mutate(date = as.integer(date)) %>% 
+      select(- `.text`)
+  )
+
+rm(dates)
+```
+
+Observed positive cases
+
+```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
+ggplot(data = state_data) +
+  geom_point(aes(x = Date, y = positive, color = state)) +
+  ylab("Daily Positive Cases") +
+  labs(color = "State") +
+  theme_minimal()# +
+  #com_theme
+
 ```
 
 
-
+## Visualize 
 
 # Global trends
 
@@ -356,11 +384,9 @@ Per Capita Deaths
 
 ```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
 ggplot(total) +
-  geom_histogram(aes(capitaDeaths, fill = Country),
+  geom_histogram(aes(capitaDeaths),
                  alpha = 0.8,
                  bins = 50) +
-  geom_density(aes(capitaDeaths, fill = Country),
-                 alpha = 0.8) +
   theme_minimal()
 ```
 
@@ -391,17 +417,16 @@ mutate(country = case_when(
                            Country %in% "USA" ~ "us"))
 
 p <- ggplot() +
-  geom_point(data = total, aes(x = Cases, y = Deaths), alpha = 0.7, size = 7#, #position = position_jitter(h=0.15,w=0.15)
-             ) +
+  geom_point(data = total, aes(x = Cases, y = Deaths), alpha = 0.7, size = 7) +
   geom_flag(data = total, aes(x = Cases,
                 y = Deaths, 
-               country = country)) +
+               country = country), size = 3) +
   ggtitle("COVID Cases & Deaths in Last 100 Days")  +
   scale_color_brewer(palette = "Set3") +
   scale_size(range = c(2, 12)) +
   #scale_x_log10() +
   labs(x = "Cases (Daily Observed Number)", y = "Deaths(Daily Observed Number)") +
-  geom_text(data = total, aes(label = Country, x = Cases, y = Deaths), color = "black") +
+  geom_text(data = total, aes(label = Country, x = Cases, y = Deaths), color = "black", vjust = -1) +
   theme_classic() +
   theme(axis.text= element_text(size = 20, face = "bold"),
         plot.title = element_text(hjust = 0.5, size = 25),
@@ -412,6 +437,8 @@ animation <- p + transition_time(Date) +
   labs(title = "Date: {frame_time}")
 
 animation
+
+# anim_save(animation = animation, filename = "anim.gif")
 ```
 
 ### Observed cases per Capita (population standardized)
@@ -420,35 +447,17 @@ animation
 
 ```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
 
-total <- total %>% 
-mutate(country = case_when(
-                          Country %in% "Australia" ~ "au",
-                          Country %in% "Brazil" ~ "br",
-                          Country %in% "China" ~ "cn",
-                          Country %in% "Cuba" ~ "cu",
-                          Country %in% "Ghana" ~ "gh",
-                           Country %in% "India" ~ "io",
-                           Country %in% "Iran" ~ "ir",
-                           Country %in% "Italy" ~ "it",
-                           Country %in% "Japan" ~ "jp",
-                           Country %in% "Mexico" ~ "mx",
-                           Country %in% "Niger" ~ "ne",
-                           Country %in% "Peru" ~ "pe",
-                           Country %in% "South Africa" ~ "sa",
-                           Country %in% "Spain" ~ "es",
-                           Country %in% "UK" ~ "gb",
-                           Country %in% "USA" ~ "us"))
-
 p2 <- ggplot() +
   geom_flag(data = total,
-            aes(x = capitaCases, y = capitaDeaths, country = country)) +
+            aes(x = capitaCases, y = capitaDeaths, country = country),    position = position_jitter(h=0.15,w=0.15), size = 3) +
   ggtitle("COVID Cases & Deaths in Last 100 Days")  +
   scale_color_brewer(palette = "Set3") +
   scale_size(range = c(2, 12)) +
   #scale_x_log10() +
   labs(x = "Cases (Daily Observed Number per Capita)", y = "Deaths(Daily Observed Number per Capita)") +
   geom_text(data = total,
-            aes(x = capitaCases, y = capitaDeaths, label = Country)) +
+            aes(x = capitaCases, y = capitaDeaths, label = Country),
+            vjust = -1) +
   theme_classic() +
   theme(axis.text= element_text(size = 20, face = "bold"),
         plot.title = element_text(hjust = 0.5, size = 25),
@@ -458,5 +467,8 @@ p2 <- ggplot() +
 animation2 <- p2 + transition_time(Date) +
   labs(title = "Date: {frame_time}")
 
+animation2 <- animate(animation2, height = 675, width = 1200)
+
 animation2
+#anim_save(animation = animation2, filename = "anim2.gif")
 ```
