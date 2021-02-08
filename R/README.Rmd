@@ -437,8 +437,9 @@ animation <- p + transition_time(Date) +
 
 animation <- animate(animation, height = 675, width = 1200, res = 150)
 
+animation
 
-anim_save(animation = animation, filename = "anim.gif")
+#anim_save(animation = animation, filename = "anim.gif")
 ```
 
 ### Observed cases per Capita (population standardized)
@@ -449,7 +450,7 @@ anim_save(animation = animation, filename = "anim.gif")
 
 p2 <- ggplot() +
   geom_flag(data = total,
-            aes(x = capitaCases, y = capitaDeaths, country = country),   # position = position_jitter(h=0.15,w=0.15),
+            aes(x = capitaCases, y = capitaDeaths, country = country),
             size = 4) +
   ggtitle("COVID Cases & Deaths in Last 100 Days")  +
   scale_color_brewer(palette = "Set3") +
@@ -471,5 +472,5 @@ animation2 <- p2 + transition_time(Date) +
 animation2 <- animate(animation2, height = 725, width = 1200, res = 150)
 
 animation2
-anim_save(animation = animation2, filename = "anim2.gif")
+#anim_save(animation = animation2, filename = "anim2.gif")
 ```
