@@ -404,7 +404,7 @@ mutate(country = case_when(
                           Country %in% "China" ~ "cn",
                           Country %in% "Cuba" ~ "cu",
                           Country %in% "Ghana" ~ "gh",
-                           Country %in% "India" ~ "io",
+                           Country %in% "India" ~ "in",
                            Country %in% "Iran" ~ "ir",
                            Country %in% "Italy" ~ "it",
                            Country %in% "Japan" ~ "jp",
@@ -417,10 +417,9 @@ mutate(country = case_when(
                            Country %in% "USA" ~ "us"))
 
 p <- ggplot() +
-  geom_point(data = total, aes(x = Cases, y = Deaths), alpha = 0.7, size = 7) +
   geom_flag(data = total, aes(x = Cases,
                 y = Deaths, 
-               country = country), size = 3) +
+               country = country), size = 7) +
   ggtitle("COVID Cases & Deaths in Last 100 Days")  +
   scale_color_brewer(palette = "Set3") +
   scale_size(range = c(2, 12)) +
@@ -436,9 +435,10 @@ p <- ggplot() +
 animation <- p + transition_time(Date) +
   labs(title = "Date: {frame_time}")
 
-animation
+animation <- animate(animation, height = 675, width = 1200, res = 150)
 
-# anim_save(animation = animation, filename = "anim.gif")
+
+anim_save(animation = animation, filename = "anim.gif")
 ```
 
 ### Observed cases per Capita (population standardized)
@@ -449,12 +449,13 @@ animation
 
 p2 <- ggplot() +
   geom_flag(data = total,
-            aes(x = capitaCases, y = capitaDeaths, country = country),    position = position_jitter(h=0.15,w=0.15), size = 3) +
+            aes(x = capitaCases, y = capitaDeaths, country = country),   # position = position_jitter(h=0.15,w=0.15),
+            size = 4) +
   ggtitle("COVID Cases & Deaths in Last 100 Days")  +
   scale_color_brewer(palette = "Set3") +
   scale_size(range = c(2, 12)) +
   #scale_x_log10() +
-  labs(x = "Cases (Daily Observed Number per Capita)", y = "Deaths(Daily Observed Number per Capita)") +
+  labs(x = "Cases (Daily Number per Capita)", y = "Deaths(Daily Number per Capita)") +
   geom_text(data = total,
             aes(x = capitaCases, y = capitaDeaths, label = Country),
             vjust = -1) +
@@ -467,8 +468,8 @@ p2 <- ggplot() +
 animation2 <- p2 + transition_time(Date) +
   labs(title = "Date: {frame_time}")
 
-animation2 <- animate(animation2, height = 675, width = 1200)
+animation2 <- animate(animation2, height = 725, width = 1200, res = 150)
 
 animation2
-#anim_save(animation = animation2, filename = "anim2.gif")
+anim_save(animation = animation2, filename = "anim2.gif")
 ```
