@@ -12,4 +12,8 @@ read_state <- function(state, index_seq = modelr::seq_range(1:200, by = 2)){
     slice(index_seq)
     
 }
-  
+
+# Plotting aesthetics
+text_theme <- theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, size = 22),
+                    axis.title = element_text(size= 16),
+                    plot.subtitle = element_text(hjust = 0.5, vjust = 0.5, size = 18))

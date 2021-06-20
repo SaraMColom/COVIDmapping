@@ -196,12 +196,16 @@ rm(dates)
 Observed positive cases
 
 ```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
+
+state_data <- state_data %>% 
+  mutate(Date = ymd(Date))
+
 ggplot(data = state_data) +
   geom_point(aes(x = Date, y = positive, color = state)) +
   ylab("Daily Positive Cases") +
   labs(color = "State") +
-  theme_minimal()# +
-  #com_theme
+  theme_minimal()+
+  scale_x_date(date_breaks = "2 weeks", date_labels = "%b")
 
 ```
 
@@ -218,7 +222,7 @@ First read in and wrangle data.
 
 ```{r, warning = F, message = F}
 
-coun_res <- GET("https://corona.lmao.ninja/v2/historical?lastdays=100") # read in data
+coun_res <- GET("https://corona.lmao.ninja/v2/historical?lastdays=all") # read in data
 
 coun_data = fromJSON(rawToChar(coun_res$content)) # Convert json to tabular data
 
@@ -245,16 +249,25 @@ index <- coun_data %>%
   pull(country) %in% countrylist %>% 
   which()
 
-# Dates to capture (1st and 15th day of each month)
+# Dates to capture (1st and 15th day of each month) for 2020 and 2021
 
-captdate <- c(paste(c(1:12), rep("1/20", times = 12), sep = "/"), # first day of month
+captdate_2020 <- c(paste(c(1:12), rep("1/20", times = 12), sep = "/"), # first day of month
            paste(c(1:12), rep("15/20", times = 12), sep = "/")) %>%  # 15th day of month
   mdy()
 
+captdate <- c(c(paste(c(1:12), rep("1/21", times = 12), sep = "/"), # first day of month
+           paste(c(1:12), rep("15/21", times = 12), sep = "/")) %>%  # 15th day of month
+  mdy(),
+captdate_2020)
+
+remove(captdate_2020)
+
+# Filter for specific countries
 countries <- coun_data %>% 
   filter(country %in% countrylist) %>%
   pull(country)
 
+# Save provinces
 province <- coun_data %>% 
   filter(country %in% countrylist) %>%
   pull(province)
@@ -380,18 +393,50 @@ sum_total <- total %>%
 
 sum_total
 ```
-Per Capita Deaths
+Plotting recovered, deaths, and cases
+
 
 ```{r, warning = F, message = F, fig.width = 12, fig.height = 10}
-ggplot(total) +
-  geom_histogram(aes(capitaDeaths),
-                 alpha = 0.8,
-                 bins = 50) +
-  theme_minimal()
+tot_long <- total %>%  
+  select(Cases, Deaths, Recovered) %>% 
+  gather() %>% 
+  mutate(
+    Country = rep(total$Country, 3),
+    Date = rep(total$Date, 3)
+  )
+
+tot_long <- tot_long %>% 
+  group_by(Country, key) %>%
+  mutate(cum = cumsum(value))
+
+ggplot(tot_long) +
+  geom_histogram(aes(log(value), fill = key),
+                 alpha = 0.8) +
+  ggtitle("Daily Deaths") +
+  ylab("Frequency") +
+  xlab("Log-fold Count of Cases/Deaths/Recovered") +
+  theme_minimal() +
+  facet_wrap(~ Country, ncol =3) +
+  text_theme
 ```
 
 
-## Make animation
+
+```{r}
+
+base <- ggplot(tot_long, aes(Date, cum, color = key)) +
+  geom_point() +
+  scale_x_date(date_labels = "%b %d %y") +
+  theme_minimal() +
+  facet_wrap(~ Country, ncol =3) +
+  text_theme
+
+```
+
+
+
+
+base + scale_x_date(date_labels = "%b %d")## Make animation
 
 ### Observed cases (not standardized)
 

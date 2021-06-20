@@ -18,96 +18,103 @@ head(data)
 ```
 
     ##       date state positive probableCases negative pending totalTestResultsSource
-    ## 1 20210207    AK    53279            NA       NA      NA        totalTestsViral
-    ## 2 20210207    AL   472423        101367  1816273      NA  totalTestsPeopleViral
-    ## 3 20210207    AR   306736         62862  2285451      NA        totalTestsViral
-    ## 4 20210207    AS        0            NA     2140      NA        totalTestsViral
-    ## 5 20210207    AZ   780637         50509  2818265      NA        totalTestsViral
-    ## 6 20210207    CA  3335926            NA       NA      NA        totalTestsViral
+    ## 1 20210307    AK    56886            NA       NA      NA        totalTestsViral
+    ## 2 20210307    AL   499819        107742  1931711      NA  totalTestsPeopleViral
+    ## 3 20210307    AR   324818         69092  2480716      NA        totalTestsViral
+    ## 4 20210307    AS        0            NA     2140      NA        totalTestsViral
+    ## 5 20210307    AZ   826454         56519  3073010      NA        totalTestsViral
+    ## 6 20210307    CA  3501394            NA       NA      NA        totalTestsViral
     ##   totalTestResults hospitalizedCurrently hospitalizedCumulative inIcuCurrently
-    ## 1          1536911                    44                   1219             NA
-    ## 2          2187329                  1513                  43005             NA
-    ## 3          2529325                   781                  14066            270
+    ## 1          1731628                    33                   1293             NA
+    ## 2          2323788                   494                  45976             NA
+    ## 3          2736442                   335                  14926            141
     ## 4             2140                    NA                     NA             NA
-    ## 5          6982148                  2910                  54657            838
-    ## 6         43994322                 12476                     NA           3339
+    ## 5          7908105                   963                  57907            273
+    ## 6         49646014                  4291                     NA           1159
     ##   inIcuCumulative onVentilatorCurrently onVentilatorCumulative recovered
-    ## 1              NA                    11                     NA        NA
-    ## 2            2576                    NA                   1460    252880
-    ## 3              NA                   126                   1458    285306
+    ## 1              NA                     2                     NA        NA
+    ## 2            2676                    NA                   1515    295690
+    ## 3              NA                    65                   1533    315517
     ## 4              NA                    NA                     NA        NA
-    ## 5              NA                   561                     NA    107979
+    ## 5              NA                   143                     NA        NA
     ## 6              NA                    NA                     NA        NA
-    ##   dataQualityGrade    lastUpdateEt         dateModified checkTimeEt death
-    ## 1                A  2/5/2021 03:59 2021-02-05T03:59:00Z 02/04 22:59   279
-    ## 2                A  2/7/2021 11:00 2021-02-07T11:00:00Z 02/07 06:00  8515
-    ## 3               A+  2/6/2021 00:00 2021-02-06T00:00:00Z 02/05 19:00  5076
-    ## 4              N/A 12/1/2020 00:00 2020-12-01T00:00:00Z 11/30 19:00     0
-    ## 5               A+  2/7/2021 00:00 2021-02-07T00:00:00Z 02/06 19:00 14048
-    ## 6                B  2/7/2021 02:59 2021-02-07T02:59:00Z 02/06 21:59 43942
-    ##   hospitalized          dateChecked totalTestsViral positiveTestsViral
-    ## 1         1219 2021-02-05T03:59:00Z         1536911              64404
-    ## 2        43005 2021-02-07T11:00:00Z              NA                 NA
-    ## 3        14066 2021-02-06T00:00:00Z         2529325                 NA
-    ## 4           NA 2020-12-01T00:00:00Z            2140                 NA
-    ## 5        54657 2021-02-07T00:00:00Z         6982148                 NA
-    ## 6           NA 2021-02-07T02:59:00Z        43994322                 NA
-    ##   negativeTestsViral positiveCasesViral deathConfirmed deathProbable
-    ## 1            1470760                 NA             NA            NA
-    ## 2                 NA             371056           6747          1768
-    ## 3            2285451             243874           4054          1022
-    ## 4                 NA                  0             NA            NA
-    ## 5                 NA             730128          12480          1568
-    ## 6                 NA            3335926             NA            NA
-    ##   totalTestEncountersViral totalTestsPeopleViral totalTestsAntibody
-    ## 1                       NA                    NA                 NA
-    ## 2                       NA               2187329                 NA
-    ## 3                       NA                    NA                 NA
-    ## 4                       NA                    NA                 NA
-    ## 5                       NA               3548393             423601
-    ## 6                       NA                    NA                 NA
-    ##   positiveTestsAntibody negativeTestsAntibody totalTestsPeopleAntibody
-    ## 1                    NA                    NA                       NA
-    ## 2                    NA                    NA                   109260
-    ## 3                    NA                    NA                       NA
-    ## 4                    NA                    NA                       NA
-    ## 5                    NA                    NA                       NA
-    ## 6                    NA                    NA                       NA
-    ##   positiveTestsPeopleAntibody negativeTestsPeopleAntibody
-    ## 1                          NA                          NA
-    ## 2                          NA                          NA
-    ## 3                          NA                          NA
-    ## 4                          NA                          NA
-    ## 5                          NA                          NA
-    ## 6                          NA                          NA
-    ##   totalTestsPeopleAntigen positiveTestsPeopleAntigen totalTestsAntigen
-    ## 1                      NA                         NA                NA
-    ## 2                      NA                         NA                NA
-    ## 3                  389367                      73756                NA
-    ## 4                      NA                         NA                NA
-    ## 5                      NA                         NA                NA
-    ## 6                      NA                         NA                NA
-    ##   positiveTestsAntigen fips positiveIncrease negativeIncrease   total
-    ## 1                   NA    2                0                0   53279
-    ## 2                   NA    1             1112             4462 2288696
-    ## 3                   NA    5              672             8180 2592187
-    ## 4                   NA   60                0                0    2140
-    ## 5                   NA    4             1544            16776 3598902
-    ## 6                   NA    6            15064                0 3335926
-    ##   totalTestResultsIncrease  posNeg deathIncrease hospitalizedIncrease
-    ## 1                        0   53279             0                    0
-    ## 2                     5308 2288696             2                    0
-    ## 3                     8840 2592187            15                   17
-    ## 4                        0    2140             0                    0
-    ## 5                    59968 3598902            37                  150
-    ## 6                   275167 3335926           295                    0
+    ##      lastUpdateEt         dateModified checkTimeEt death hospitalized
+    ## 1  3/5/2021 03:59 2021-03-05T03:59:00Z 03/04 22:59   305         1293
+    ## 2  3/7/2021 11:00 2021-03-07T11:00:00Z 03/07 06:00 10148        45976
+    ## 3  3/7/2021 00:00 2021-03-07T00:00:00Z 03/06 19:00  5319        14926
+    ## 4 12/1/2020 00:00 2020-12-01T00:00:00Z 11/30 19:00     0           NA
+    ## 5  3/7/2021 00:00 2021-03-07T00:00:00Z 03/06 19:00 16328        57907
+    ## 6  3/7/2021 02:59 2021-03-07T02:59:00Z 03/06 21:59 54124           NA
+    ##   hospitalizedDischarged          dateChecked totalTestsViral
+    ## 1                     NA 2021-03-05T03:59:00Z         1731628
+    ## 2                     NA 2021-03-07T11:00:00Z              NA
+    ## 3                     NA 2021-03-07T00:00:00Z         2736442
+    ## 4                     NA 2020-12-01T00:00:00Z            2140
+    ## 5                 118932 2021-03-07T00:00:00Z         7908105
+    ## 6                     NA 2021-03-07T02:59:00Z        49646014
+    ##   positiveTestsViral negativeTestsViral positiveCasesViral deathConfirmed
+    ## 1              68693            1660758                 NA             NA
+    ## 2                 NA                 NA             392077           7963
+    ## 3                 NA            2480716             255726           4308
+    ## 4                 NA                 NA                  0             NA
+    ## 5                 NA                 NA             769935          14403
+    ## 6                 NA                 NA            3501394             NA
+    ##   deathProbable totalTestEncountersViral totalTestsPeopleViral
+    ## 1            NA                       NA                    NA
+    ## 2          2185                       NA               2323788
+    ## 3          1011                       NA                    NA
+    ## 4            NA                       NA                    NA
+    ## 5          1925                       NA               3842945
+    ## 6            NA                       NA                    NA
+    ##   totalTestsAntibody positiveTestsAntibody negativeTestsAntibody
+    ## 1                 NA                    NA                    NA
+    ## 2                 NA                    NA                    NA
+    ## 3                 NA                    NA                    NA
+    ## 4                 NA                    NA                    NA
+    ## 5             580569                    NA                    NA
+    ## 6                 NA                    NA                    NA
+    ##   totalTestsPeopleAntibody positiveTestsPeopleAntibody
+    ## 1                       NA                          NA
+    ## 2                   119757                          NA
+    ## 3                       NA                          NA
+    ## 4                       NA                          NA
+    ## 5                   444089                          NA
+    ## 6                       NA                          NA
+    ##   negativeTestsPeopleAntibody totalTestsPeopleAntigen
+    ## 1                          NA                      NA
+    ## 2                          NA                      NA
+    ## 3                          NA                  481311
+    ## 4                          NA                      NA
+    ## 5                          NA                      NA
+    ## 6                          NA                      NA
+    ##   positiveTestsPeopleAntigen totalTestsAntigen positiveTestsAntigen fips
+    ## 1                         NA                NA                   NA    2
+    ## 2                         NA                NA                   NA    1
+    ## 3                      81803                NA                   NA    5
+    ## 4                         NA                NA                   NA   60
+    ## 5                         NA                NA                   NA    4
+    ## 6                         NA                NA                   NA    6
+    ##   positiveIncrease negativeIncrease   total totalTestResultsIncrease  posNeg
+    ## 1                0                0   56886                        0   56886
+    ## 2              408             2087 2431530                     2347 2431530
+    ## 3              165             3267 2805534                     3380 2805534
+    ## 4                0                0    2140                        0    2140
+    ## 5             1335            13678 3899464                    45110 3899464
+    ## 6             3816                0 3501394                   133186 3501394
+    ##   dataQualityGrade deathIncrease hospitalizedIncrease
+    ## 1               NA             0                    0
+    ## 2               NA            -1                    0
+    ## 3               NA            22                   11
+    ## 4               NA             0                    0
+    ## 5               NA             5                   44
+    ## 6               NA           258                    0
     ##                                       hash commercialScore negativeRegularScore
-    ## 1 07a5d43f958541e9cdabb5ea34c8fb481835e130               0                    0
-    ## 2 bde38ab9d426d29691fb40de1edeb285b1674fdc               0                    0
-    ## 3 c2f88044a45b0669c5355b2cddbaca15de43c7f3               0                    0
-    ## 4 80aa91d3878a87a2e94edb3586244a5df450d0bb               0                    0
-    ## 5 380468038ad1b440ada7da318650aefc8e8a772d               0                    0
-    ## 6 8652c6d586b9f8ea93717d06d90c6cf4e2a7cc9b               0                    0
+    ## 1 dc4bccd4bb885349d7e94d6fed058e285d4be164               0                    0
+    ## 2 997207b430824ea40b8eb8506c19a93e07bc972e               0                    0
+    ## 3 50921aeefba3e30d31623aa495b47fb2ecc72fae               0                    0
+    ## 4 f77912d0b80d579fbb6202fa1a90554fc4dc1443               0                    0
+    ## 5 0437a7a96f4471666f775e63e86923eb5cbd8cdf               0                    0
+    ## 6 63c5c0fd2daef2fb65150e9db486de98ed3f7b72               0                    0
     ##   negativeScore positiveScore score grade
     ## 1             0             0     0    NA
     ## 2             0             0     0    NA
@@ -264,18 +271,18 @@ rm(dates)
 Observed positive cases
 
 ``` r
+state_data <- state_data %>% 
+  mutate(Date = ymd(Date))
+
 ggplot(data = state_data) +
   geom_point(aes(x = Date, y = positive, color = state)) +
   ylab("Daily Positive Cases") +
   labs(color = "State") +
-  theme_minimal()# +
+  theme_minimal()+
+  scale_x_date(date_breaks = "2 weeks", date_labels = "%b")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
-
-``` r
-  #com_theme
-```
 
 ## Visualize
 
@@ -286,7 +293,7 @@ Prepare a scatter plot animation for multiple countries cases vs deaths.
 First read in and wrangle data.
 
 ``` r
-coun_res <- GET("https://corona.lmao.ninja/v2/historical?lastdays=100") # read in data
+coun_res <- GET("https://corona.lmao.ninja/v2/historical?lastdays=all") # read in data
 
 coun_data = fromJSON(rawToChar(coun_res$content)) # Convert json to tabular data
 
@@ -313,16 +320,25 @@ index <- coun_data %>%
   pull(country) %in% countrylist %>% 
   which()
 
-# Dates to capture (1st and 15th day of each month)
+# Dates to capture (1st and 15th day of each month) for 2020 and 2021
 
-captdate <- c(paste(c(1:12), rep("1/20", times = 12), sep = "/"), # first day of month
+captdate_2020 <- c(paste(c(1:12), rep("1/20", times = 12), sep = "/"), # first day of month
            paste(c(1:12), rep("15/20", times = 12), sep = "/")) %>%  # 15th day of month
   mdy()
 
+captdate <- c(c(paste(c(1:12), rep("1/21", times = 12), sep = "/"), # first day of month
+           paste(c(1:12), rep("15/21", times = 12), sep = "/")) %>%  # 15th day of month
+  mdy(),
+captdate_2020)
+
+remove(captdate_2020)
+
+# Filter for specific countries
 countries <- coun_data %>% 
   filter(country %in% countrylist) %>%
   pull(country)
 
+# Save provinces
 province <- coun_data %>% 
   filter(country %in% countrylist) %>%
   pull(province)
@@ -455,31 +471,44 @@ sum_total
     ## # A tibble: 16 x 7
     ##    Country Cases_mean Cases_sd Deaths_mean Deaths_sd Recovered_mean Recovered_sd
     ##    <chr>        <dbl>    <dbl>       <dbl>     <dbl>          <dbl>        <dbl>
-    ##  1 Austra~     27833.     200.        908.     0.577         25529         149. 
-    ##  2 Brazil    6191405.  624274.     170622   9883.          5555144.     519240. 
-    ##  3 China       92694.    1400.       4745.     8.02          86999         886. 
-    ##  4 Cuba         8124.    1141.        133      4.24           7400.        973. 
-    ##  5 Ghana       50796     2196.        323      2.94          49514.       2142. 
-    ##  6 India     9126600   746747.     133724.  9378.          8545868.     830398. 
-    ##  7 Iran       870496   223143.      44522.  7692.           639187      151535. 
-    ##  8 Italy     1344835.  511251.      51568. 11968.           659798.     382811. 
-    ##  9 Japan      139070.   36631.       2085    359.           115718.      29578. 
-    ## 10 Mexico    1081370.  147098.     103075. 10062.           826153       81414. 
-    ## 11 Niger        1619.     519.         74      5.94           1209.         87.3
-    ## 12 Peru       946784.   36208.      35593.   985.           874238       41363. 
-    ## 13 South ~    785956.   64427.      21239.  1859.           711576.      47548. 
-    ## 14 Spain     1515731.  253478.      42640.  5497.           150376           0  
-    ## 15 UK        1487901   367621.      55747.  7981.             3411         549. 
-    ## 16 USA      12762681  3288482.     263404  31566.          3258011     2270783.
+    ##  1 Austra~     19723.   1.15e4       563.      407.          15018.        9379.
+    ##  2 Brazil    5960934.   5.54e6    163550.   145722.        5208338.     4947252.
+    ##  3 China       89278.   1.61e4      4346.     1019.          80804.       22146.
+    ##  4 Cuba        28898.   4.55e4       223.      277.          26699.       43038.
+    ##  5 Ghana       44782.   3.40e4       320.      278.          42338.       33523.
+    ##  6 India     7631980.   8.23e6    103264.    99129.        6927368.     7575165.
+    ##  7 Iran       919819.   9.37e5     34377.    27417.         757767.      787215.
+    ##  8 Italy     1437246.   1.55e6     56400.    40577.        1135049.     1364010.
+    ##  9 Japan      210073.   2.45e5      3730.     4250.         185843.      223504.
+    ## 10 Mexico    1009625.   9.11e5     94355.    81940.         793961.      718156.
+    ## 11 Niger        2289.   1.99e3        92.7      66.5          1975.        1834.
+    ## 12 Peru       794102.   6.47e5     77353.    58877.         719690.      640007.
+    ## 13 South ~    752998.   6.37e5     22642.    21698.         677551.      602124.
+    ## 14 Spain     1439070.   1.39e6     40735.    25562.         125313.       53108.
+    ## 15 UK        1738954.   1.84e6     62175.    45210.           5261         5560.
+    ## 16 USA      13323786.   1.27e7    268042.   208470.         893061.     1434813.
 
 Per Capita Deaths
 
 ``` r
-ggplot(total) +
-  geom_histogram(aes(capitaDeaths),
+tot_long <- total %>%  
+  select(Cases, Deaths, Recovered) %>% 
+  gather() %>% 
+  mutate(
+    Country = rep(total$Country, 3),
+    Date = rep(total$Date, 3)
+  )
+
+ggplot(tot_long) +
+  geom_histogram(aes(log(value), fill = key),
                  alpha = 0.8,
                  bins = 50) +
-  theme_minimal()
+  ggtitle("Daily Deaths") +
+  ylab("Count log-fold") +
+  xlab("Z-score") +
+  theme_minimal() +
+  facet_wrap(~ Country, ncol =3) +
+  text_theme
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
