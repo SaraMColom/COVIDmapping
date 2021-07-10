@@ -471,24 +471,24 @@ sum_total
     ## # A tibble: 16 x 7
     ##    Country Cases_mean Cases_sd Deaths_mean Deaths_sd Recovered_mean Recovered_sd
     ##    <chr>        <dbl>    <dbl>       <dbl>     <dbl>          <dbl>        <dbl>
-    ##  1 Austra~     19723.   1.15e4       563.      407.          15018.        9379.
-    ##  2 Brazil    5960934.   5.54e6    163550.   145722.        5208338.     4947252.
-    ##  3 China       89278.   1.61e4      4346.     1019.          80804.       22146.
-    ##  4 Cuba        28898.   4.55e4       223.      277.          26699.       43038.
-    ##  5 Ghana       44782.   3.40e4       320.      278.          42338.       33523.
-    ##  6 India     7631980.   8.23e6    103264.    99129.        6927368.     7575165.
-    ##  7 Iran       919819.   9.37e5     34377.    27417.         757767.      787215.
-    ##  8 Italy     1437246.   1.55e6     56400.    40577.        1135049.     1364010.
-    ##  9 Japan      210073.   2.45e5      3730.     4250.         185843.      223504.
-    ## 10 Mexico    1009625.   9.11e5     94355.    81940.         793961.      718156.
-    ## 11 Niger        2289.   1.99e3        92.7      66.5          1975.        1834.
-    ## 12 Peru       794102.   6.47e5     77353.    58877.         719690.      640007.
-    ## 13 South ~    752998.   6.37e5     22642.    21698.         677551.      602124.
-    ## 14 Spain     1439070.   1.39e6     40735.    25562.         125313.       53108.
-    ## 15 UK        1738954.   1.84e6     62175.    45210.           5261         5560.
-    ## 16 USA      13323786.   1.27e7    268042.   208470.         893061.     1434813.
+    ##  1 Austra~     20036.   1.15e4       572.      405.          15270.        9359.
+    ##  2 Brazil    6322687.   5.86e6    173737.   155700.        5530307.     5232942.
+    ##  3 China       89693.   1.61e4      4360      1007.          81307.       22020.
+    ##  4 Cuba        33614    5.28e4       254.      328.          30965.       49345.
+    ##  5 Ghana       46243.   3.46e4       333.      286.          43798.       34138.
+    ##  6 India     8284159.   8.98e6    111751.   109812.        7573680.     8385438.
+    ##  7 Iran       985506.   1.00e6     35806.    28302.         818686.      855202.
+    ##  8 Italy     1517918.   1.60e6     58434.    41748.        1219300.     1433262.
+    ##  9 Japan      226986.   2.61e5      4045.     4583.         202481.      241192.
+    ## 10 Mexico    1052932.   9.34e5     98323.    84071.         828518.      736462.
+    ## 11 Niger        2381.   2.03e3        95.6      67.6          2068.        1887.
+    ## 12 Peru       830200.   6.72e5     80648.    61193.         756775.      667606.
+    ## 13 South ~    788500.   6.62e5     23739.    22340.         708329.      620521.
+    ## 14 Spain     1507134.   1.43e6     41882.    26082.         126029.       52493.
+    ## 15 UK        1827697.   1.89e6     64068.    45927.           5561.        5757.
+    ## 16 USA      13905396.   1.30e7    277648    213123.         867545.     1421593.
 
-Per Capita Deaths
+Plotting recovered, deaths, and cases
 
 ``` r
 tot_long <- total %>%  
@@ -499,13 +499,16 @@ tot_long <- total %>%
     Date = rep(total$Date, 3)
   )
 
+tot_long <- tot_long %>% 
+  group_by(Country, key) %>%
+  mutate(cum = cumsum(value))
+
 ggplot(tot_long) +
   geom_histogram(aes(log(value), fill = key),
-                 alpha = 0.8,
-                 bins = 50) +
+                 alpha = 0.8) +
   ggtitle("Daily Deaths") +
-  ylab("Count log-fold") +
-  xlab("Z-score") +
+  ylab("Frequency") +
+  xlab("Log-fold Count of Cases/Deaths/Recovered") +
   theme_minimal() +
   facet_wrap(~ Country, ncol =3) +
   text_theme
@@ -513,7 +516,15 @@ ggplot(tot_long) +
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
-## Make animation
+``` r
+base <- ggplot(tot_long, aes(Date, value, color = key)) +
+  geom_point() +
+  scale_x_date(breaks = "1 month", date_labels = "%b %d %y") +
+  ylab("Count") +
+  theme_minimal() +
+  facet_wrap(~ Country, ncol =3) +
+  text_theme
+```
 
 ### Observed cases (not standardized)
 
@@ -546,7 +557,7 @@ p <- ggplot() +
   scale_size(range = c(2, 12)) +
   #scale_x_log10() +
   labs(x = "Cases (Daily Observed Number)", y = "Deaths(Daily Observed Number)") +
-  geom_text(data = total, aes(label = Country, x = Cases, y = Deaths), color = "black", vjust = -1) +
+  geom_text(data = total, aes(label = Country, x = Cases, y = Deaths), color = "black", vjust = -1, size = 3) +
   theme_classic() +
   theme(axis.text= element_text(size = 20, face = "bold"),
         plot.title = element_text(hjust = 0.5, size = 25),
@@ -561,7 +572,7 @@ animation <- animate(animation, height = 675, width = 1200, res = 150)
 animation
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-14-1.gif)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-15-1.gif)<!-- -->
 
 ``` r
 #anim_save(animation = animation, filename = "anim.gif")
@@ -581,7 +592,7 @@ p2 <- ggplot() +
   labs(x = "Cases (Daily Number per Capita)", y = "Deaths(Daily Number per Capita)") +
   geom_text(data = total,
             aes(x = capitaCases, y = capitaDeaths, label = Country),
-            vjust = -1) +
+            vjust = -1, size = 3) +
   theme_classic() +
   theme(axis.text= element_text(size = 20, face = "bold"),
         plot.title = element_text(hjust = 0.5, size = 25),
@@ -596,7 +607,7 @@ animation2 <- animate(animation2, height = 725, width = 1200, res = 150)
 animation2
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-15-1.gif)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-16-1.gif)<!-- -->
 
 ``` r
 #anim_save(animation = animation2, filename = "anim2.gif")

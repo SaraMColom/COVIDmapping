@@ -36,7 +36,6 @@ data <- read.csv("https://api.covidtracking.com/v1/states/current.csv")
 
 info <- read.csv("../Data/states_info.csv")
 
-
 current_date <- Sys.Date()
 ```
 
@@ -424,9 +423,10 @@ ggplot(tot_long) +
 
 ```{r}
 
-base <- ggplot(tot_long, aes(Date, cum, color = key)) +
+base <- ggplot(tot_long, aes(Date, value, color = key)) +
   geom_point() +
-  scale_x_date(date_labels = "%b %d %y") +
+  scale_x_date(breaks = "1 month", date_labels = "%b %d %y") +
+  ylab("Count") +
   theme_minimal() +
   facet_wrap(~ Country, ncol =3) +
   text_theme
@@ -436,7 +436,6 @@ base <- ggplot(tot_long, aes(Date, cum, color = key)) +
 
 
 
-base + scale_x_date(date_labels = "%b %d")## Make animation
 
 ### Observed cases (not standardized)
 
@@ -470,7 +469,7 @@ p <- ggplot() +
   scale_size(range = c(2, 12)) +
   #scale_x_log10() +
   labs(x = "Cases (Daily Observed Number)", y = "Deaths(Daily Observed Number)") +
-  geom_text(data = total, aes(label = Country, x = Cases, y = Deaths), color = "black", vjust = -1) +
+  geom_text(data = total, aes(label = Country, x = Cases, y = Deaths), color = "black", vjust = -1, size = 3) +
   theme_classic() +
   theme(axis.text= element_text(size = 20, face = "bold"),
         plot.title = element_text(hjust = 0.5, size = 25),
@@ -504,7 +503,7 @@ p2 <- ggplot() +
   labs(x = "Cases (Daily Number per Capita)", y = "Deaths(Daily Number per Capita)") +
   geom_text(data = total,
             aes(x = capitaCases, y = capitaDeaths, label = Country),
-            vjust = -1) +
+            vjust = -1, size = 3) +
   theme_classic() +
   theme(axis.text= element_text(size = 20, face = "bold"),
         plot.title = element_text(hjust = 0.5, size = 25),
